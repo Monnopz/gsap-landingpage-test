@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Navbar from './components/Navbar.vue';
 import Hero from './components/Hero.vue';
+import Cocktails from './components/Cocktails.vue';
 
 </script>
 
@@ -8,6 +9,7 @@ import Hero from './components/Hero.vue';
   <main>
     <Navbar />
     <Hero />
+    <Cocktails />
   </main>
 </template>
 
