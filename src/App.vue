@@ -8,7 +8,6 @@ import Hero from './components/Hero.vue';
   <main>
     <Navbar />
     <Hero />
-    <div class="h-dvh bg-black"></div>
   </main>
 </template>
 

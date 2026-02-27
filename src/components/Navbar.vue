@@ -1,22 +1,30 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
 
-import { navLinks } from '../constants';
+import { navLinks } from '../constants'
 
-const navTween = gsap.timeline({ 
-    scrollTrigger: {
-        trigger: 'nav',
-        start: 'bottom top' // Cuando el fondo del nabvar alcance el top del viewport
-    }
-})
 
 const animateNav = (element:string):void => {
-    navTween.fromTo('nav', { backgroundColor: 'transparent'}, { backgroundColor: '#00000050', backgroundFilter: 'blur(10px)', duration: 1, ease: 'power1.inOut' })
+
+    const navTween = gsap.timeline({ 
+        scrollTrigger: {
+            trigger: 'nav',
+            start: 'bottom top', // Cuando el fondo del nabvar alcance el top del viewport
+            scrub: true
+        }
+    })
+
+    navTween.fromTo(element, { backgroundColor: 'transparent'}, { backgroundColor: '#00000050', backdropFilter: 'blur(10px)', duration: 1, ease: 'power1.inOut' })
 }
 
 onMounted(() => {
     animateNav('nav')
+})
+
+onUnmounted(() => {
+    ScrollTrigger.getAll().forEach(t => t.kill()); // Evita fugas de memoria de scroll al cambiar de ruta
 })
 
 </script>

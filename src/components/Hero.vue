@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 import gsap from 'gsap';
-import { SplitText } from 'gsap/all';
+import { ScrollTrigger, SplitText } from 'gsap/all';
 
+const isMobile = ref(window.innerWidth < 767);
+
+// Valores de animacion para el video
+const startValue = isMobile.value ? 'top 50%' : 'center 60%'; // Cuando el centro del video alcance el 60% del viewport (o el top del video alcance el 50% del viewport en mobile)
+const endValue = isMobile.value ? '120% top' : 'bottom top'; // Cuando el bottom del video alcance el top del viewport (o el 120% del video alcance el top del viewport en mobile)
+
+const videoRef = ref<HTMLVideoElement | null>(null);
 
 const heroSplitAnimation = ():void => {
     const heroSplit = new SplitText('.title', { type: 'chars, words' }); // Rompe en letras y palabras
@@ -27,7 +34,7 @@ const heroSplitAnimation = ():void => {
     });
 }
 
-const heroLeafsAnimation = () => {
+const heroLeafsAnimation = ():void => {
     const timelineLeafs = gsap.timeline({
         scrollTrigger: {
             trigger: '#hero',
@@ -40,9 +47,40 @@ const heroLeafsAnimation = () => {
     timelineLeafs.to('.left-leaf', { y: -200 }, 0) // Animación para la hoja izquierda
 }
 
+const heroVideoTimeline = ():void => {
+    const videoTimelineRef = gsap.timeline({
+        scrollTrigger: {
+            trigger: 'video',
+            start: startValue,
+            end: endValue,
+            scrub: true,
+            pin: true // Mantiene pegado el video mientras ocurre el scroll
+        }
+    })
+
+    if(videoRef !== null) {
+        videoRef.value.onloadedmetadata = () => {
+            videoTimelineRef.to(videoRef.value, {
+                currentTime: videoRef.value?.duration || 0
+            })
+        }
+    }
+}
+
+const resizeWindow = ():void => {
+    isMobile.value = window.innerWidth < 767;
+}
+
 onMounted(() => {
+    window.addEventListener('resize', resizeWindow);
     heroSplitAnimation()
     heroLeafsAnimation()
+    heroVideoTimeline()
+})
+
+onUnmounted(() => {
+    window.removeEventListener('resize', resizeWindow);
+    ScrollTrigger.getAll().forEach(t => t.kill()); // Evita fugas de memoria de scroll al cambiar de ruta
 })
 
 </script>
@@ -69,4 +107,7 @@ onMounted(() => {
             </div>
         </div>
     </section>
+    <div class="video absolute inset-0">
+        <video ref="videoRef" src="/videos/output.mp4" muted playsinline preload="auto"></video>
+    </div>
 </template>
