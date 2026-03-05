@@ -2,6 +2,7 @@
 import Navbar from './components/Navbar.vue';
 import Hero from './components/Hero.vue';
 import Cocktails from './components/Cocktails.vue';
+import About from './components/About.vue';
 
 </script>
 
@@ -10,6 +11,7 @@ import Cocktails from './components/Cocktails.vue';
     <Navbar />
     <Hero />
     <Cocktails />
+    <About />
   </main>
 </template>
 
